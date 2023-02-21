@@ -74,6 +74,15 @@ class ReflexAgent(Agent):
         newScaredTimes = [ghostState.scaredTimer for ghostState in newGhostStates]
 
         "*** YOUR CODE HERE ***"
+        print("Successor Game State:", successorGameState)
+        print("New Position:", newPos)
+        print("New Food:", newFood)
+        print("New Ghost States:", newGhostStates)
+        print("New Scared Times:", newScaredTimes)
+
+        #ideas for eval func:
+        # if there is food next to current position, go there
+
         return successorGameState.getScore()
 
 def scoreEvaluationFunction(currentGameState):
