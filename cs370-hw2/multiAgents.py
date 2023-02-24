@@ -77,21 +77,43 @@ class ReflexAgent(Agent):
         print("Successor Game State:", successorGameState)
         print("New Position:", newPos)
         print("New Food:", newFood)
-        print("New Ghost States:", newGhostStates)
+        print("New Ghost States", str(newGhostStates))
         print("New Scared Times:", newScaredTimes)
 
-        #ideas for eval func:
-        # if there is food next to current position, go there
-
-        return successorGameState.getScore()
+        score = 0
+        newFoodList = newFood.asList()
+        foodDistanceDict = {}
+        # if food is close, reward that
+        for food in newFoodList:
+            if len(newFoodList) == 0:
+                break
+            foodDistanceDict[food] = manhattanDistance(newPos, food)
+        if len(newFoodList) != 0:
+            minDistance = min(foodDistanceDict.values())
+            score += 1/minDistance
+        #if ghost is on you, avoid at all costs
+        print("Ghost:", newGhostStates[0].configuration.pos)
+        for ghost in newGhostStates:
+            if manhattanDistance(newPos, ghost.configuration.pos) == 0:
+                score -= 100
+        # more important to go away from ghosts:
+        ghostDistanceList = []
+        ghostCount = 0
+        for ghost in newGhostStates:
+            ghostDistanceList.append(manhattanDistance(newPos, ghost.configuration.pos))
+            ghostCount += 1
+        closestGhostDistance = min(ghostDistanceList)
+        if closestGhostDistance != 0:
+            score -= 2 * 1/closestGhostDistance
+        #focus on food when power pellet works
+        if sum(newScaredTimes) > 0:
+            score += 4 * 1/closestGhostDistance
+        return score + successorGameState.getScore()
 
 def scoreEvaluationFunction(currentGameState):
     """
     This default evaluation function just returns the score of the state.
     The score is the same one displayed in the Pacman GUI.
-
-    This evaluation function is meant for use with adversarial search agents
-    (not reflex agents).
     """
     return currentGameState.getScore()
 
