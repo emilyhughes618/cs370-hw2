@@ -167,7 +167,11 @@ class MinimaxAgent(MultiAgentSearchAgent):
         """
         "*** YOUR CODE HERE ***"
         print(gameState.getLegalActions(0))
-        util.raiseNotDefined()
+        pacmanLegalActions = gameState.getLegalActions(0)
+        print("depth:", self.depth)
+        numOfGhosts = gameState.getNumAgents() - 1
+
+        #need to get leaf node eval 
 
 class AlphaBetaAgent(MultiAgentSearchAgent):
     """
