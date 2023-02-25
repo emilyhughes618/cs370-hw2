@@ -169,39 +169,46 @@ class MinimaxAgent(MultiAgentSearchAgent):
         print(gameState.getLegalActions(0))
         print("depth:", self.depth)
         numOfGhosts = gameState.getNumAgents() - 1
-        counter = 0
 
-        def is_terminal_node(currentGameState):
-            if (currentGameState.isWin() or currentGameState.isLose()):
+
+        def is_terminal_node(currentGameState, searchedDepth):
+            if (currentGameState.isWin() or currentGameState.isLose()) or searchedDepth == self.depth:
                 return True
             return False
 
-        def max_value(currentGameState):
-            if is_terminal_node(currentGameState):
+        def max_value(currentGameState, currentDepth):
+            if is_terminal_node(currentGameState, currentDepth):
                 return self.evaluationFunction, ""
             action = ""
             value = float("-inf")
             for action in gameState.getLegalActions(0): #only pacman will maximize max
-                value2, action2 = min_value(gameState.generateSuccessor(0, action))
+                value2, action2 = min_value(gameState.generateSuccessor(0, action), currentDepth)
                 if value2 > value:
                     value = value2
                     action = action2
             return value, action
 
 
-        def min_value(currentGameState):
-            if is_terminal_node(currentGameState):
-                return self.evaluationFunction, "STOP"
+        def min_value(currentGameState, currentDepth):
+            if is_terminal_node(currentGameState, currentDepth):
+                return self.evaluationFunction, ""
             action = ""
             value = float("inf")
-            for action in gameState.getLegalActions(ghost): #only ghost will minimize 
-                value2, action2 = max_value(gameState.generateSuccessor(ghost, action))
-                if value2 > value:
-                    value = value2
-                    action = action2
+            for i in range(1, numOfGhosts + 1):
+                for action in gameState.getLegalActions(i): #only ghost will minimize 
+                    value2, action2 = max_value(gameState.generateSuccessor(i, action), currentDepth)
+                    if value2 > value:
+                        value = value2
+                        action = action2
+                if i == numOfGhosts + 1:
+                    currentDepth += 1
             return value, action
+        
+        def main():
+            # need to cut off minimax at a given depth
+            depth = self.depth
 
-        highest_value, optimal_action = max_value(gameState, self.depth)
+        highest_value, optimal_action = max_value(gameState, 0)
         return optimal_action
 
         
