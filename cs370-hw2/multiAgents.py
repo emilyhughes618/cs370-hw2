@@ -167,11 +167,45 @@ class MinimaxAgent(MultiAgentSearchAgent):
         """
         "*** YOUR CODE HERE ***"
         print(gameState.getLegalActions(0))
-        pacmanLegalActions = gameState.getLegalActions(0)
         print("depth:", self.depth)
         numOfGhosts = gameState.getNumAgents() - 1
+        counter = 0
 
-        #need to get leaf node eval 
+        def is_terminal_node(currentGameState):
+            if (currentGameState.isWin() or currentGameState.isLose()):
+                return True
+            return False
+
+        def max_value(currentGameState):
+            if is_terminal_node(currentGameState):
+                return self.evaluationFunction, ""
+            action = ""
+            value = float("-inf")
+            for action in gameState.getLegalActions(0): #only pacman will maximize max
+                value2, action2 = min_value(gameState.generateSuccessor(0, action))
+                if value2 > value:
+                    value = value2
+                    action = action2
+            return value, action
+
+
+        def min_value(currentGameState):
+            if is_terminal_node(currentGameState):
+                return self.evaluationFunction, "STOP"
+            action = ""
+            value = float("inf")
+            for action in gameState.getLegalActions(ghost): #only ghost will minimize 
+                value2, action2 = max_value(gameState.generateSuccessor(ghost, action))
+                if value2 > value:
+                    value = value2
+                    action = action2
+            return value, action
+
+        highest_value, optimal_action = max_value(gameState, self.depth)
+        return optimal_action
+
+        
+
 
 class AlphaBetaAgent(MultiAgentSearchAgent):
     """
