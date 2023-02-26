@@ -173,8 +173,9 @@ class MinimaxAgent(MultiAgentSearchAgent):
 
         counter = 0
         def minimax(state, index, counter):
-            if (state.isWin() or state.isLose() or (counter % state.getNumAgents()) == self.depth ):
-                #print("I am at a leaf node! My value is:", self.evaluationFunction(state))
+            if (state.isWin() or state.isLose() or (counter // state.getNumAgents()) == self.depth ):
+                print(" should be at leaf node, My counter is:", counter)
+                print("I am at a leaf node! My value is:", self.evaluationFunction(state))
                 return self.evaluationFunction(state), ""
             maxVal = float("-inf")
             minVal = float("inf")
