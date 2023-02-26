@@ -166,15 +166,56 @@ class MinimaxAgent(MultiAgentSearchAgent):
         Returns whether or not the game state is a losing state
         """
         "*** YOUR CODE HERE ***"
-        print(gameState.getLegalActions(0))
-        print("depth:", self.depth)
+        #print(gameState.getLegalActions(0))
+        #print("depth:", self.depth)
         numOfGhosts = gameState.getNumAgents() 
         retAction = []
 
+        counter = 0
+        def minimax(state, index, counter):
+            if (state.isWin() or state.isLose() or (counter % state.getNumAgents()) == self.depth ):
+                #print("I am at a leaf node! My value is:", self.evaluationFunction(state))
+                return self.evaluationFunction(state), ""
+            maxVal = float("-inf")
+            minVal = float("inf")
+            bestAction = ""
+            if index == 0:
+                for action in state.getLegalActions(0):
+                    print("line 184 My counter is:", counter)
+                    print("line 184 My index is:", index)
+                    print("line 185Action:", action)
+                    currentVal = minimax(state.generateSuccessor(0, action), 1, counter + 1)[0]
+                    if currentVal > maxVal:
+                        maxVal = currentVal
+                        print("line 189 Max Val:", maxVal)
+                        bestAction = action
+                return maxVal, bestAction
+            if index != 0:
+                #print("I'm at a min")
+                for action in state.getLegalActions(index):
+                    print("line 195 My counter is:", counter)
+                    print("line 196 My index is:", index)
+                    print("line 196 Action:", action)
+                    if index <= state.getNumAgents() - 2:
+                        currentVal = minimax(state.generateSuccessor(index, action), index + 1, counter + 1)[0]
+                    else:
+                        currentVal = minimax(state.generateSuccessor(index, action), 0, counter + 1)[0]
+                    if currentVal < minVal:
+                        minVal = currentVal
+                        print("linw 203 My index is:", index)
+                        print("line 204 Min Val:", minVal)
+                        bestAction = action
+                    print("line 206 my min val is:", minVal)
+                return minVal, bestAction
+            
+                        
+
+
+
+            
         def get_max(currentGameState, currentDepth):
             if (currentGameState.isWin() or currentGameState.isLose() or currentDepth == self.depth ):
                 return self.evaluationFunction(currentGameState)
-            
             
             
             bestAction = ""
@@ -200,13 +241,16 @@ class MinimaxAgent(MultiAgentSearchAgent):
                        # moveVal =  self.evaluationFunction(gameState.generateSuccessor(i, action))
                     
                     moveVal = get_max(gameState.generateSuccessor(i, action), currentDepth + 1)
+                    
                     if moveVal < minVal:
                         minVal = moveVal
                 
             return minVal
         
-        get_max(gameState, 0)
-        return retAction[0]
+        #get_max(gameState, 0)
+        ans = minimax(gameState, 0, 0)
+        return ans[1]
+        #return retAction[0]
 
             
 
