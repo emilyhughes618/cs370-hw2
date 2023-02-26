@@ -168,7 +168,47 @@ class MinimaxAgent(MultiAgentSearchAgent):
         "*** YOUR CODE HERE ***"
         print(gameState.getLegalActions(0))
         print("depth:", self.depth)
-        numOfGhosts = gameState.getNumAgents() - 1
+        numOfGhosts = gameState.getNumAgents() 
+        retAction = []
+
+        def get_max(currentGameState, currentDepth):
+            if (currentGameState.isWin() or currentGameState.isLose() or currentDepth == self.depth ):
+                return self.evaluationFunction(currentGameState)
+            
+            
+            
+            bestAction = ""
+            maxVal = float("-inf")
+            for action in gameState.getLegalActions(0):
+                moveVal = get_min(gameState.generateSuccessor(0, action), currentDepth)
+                if(moveVal > maxVal):
+                    maxVal = moveVal
+                    bestAction = action
+                
+            retAction.append(bestAction)
+            return maxVal
+        
+        def get_min(currentGameState, currentDepth):
+            if (currentGameState.isWin() or currentGameState.isLose() or currentDepth == self.depth):
+                return self.evaluationFunction(currentGameState)
+            
+            
+            minVal = float("inf")
+            for i in range(1, gameState.getNumAgents()):
+                for action in gameState.getLegalActions(i): #only ghost will minimize   
+                    #if(currentDepth == self.depth - 1):
+                       # moveVal =  self.evaluationFunction(gameState.generateSuccessor(i, action))
+                    
+                    moveVal = get_max(gameState.generateSuccessor(i, action), currentDepth + 1)
+                    if moveVal < minVal:
+                        minVal = moveVal
+                
+            return minVal
+        
+        get_max(gameState, 0)
+        return retAction[0]
+
+            
 
 
         def is_terminal_node(currentGameState, searchedDepth):
@@ -182,11 +222,12 @@ class MinimaxAgent(MultiAgentSearchAgent):
             action = ""
             value = float("-inf")
             for action in gameState.getLegalActions(0): #only pacman will maximize max
-                value2, action2 = min_value(gameState.generateSuccessor(0, action), currentDepth)
+                value2 = min_value(gameState.generateSuccessor(0, action), currentDepth)
+                print("this is action")
+                print(action)
                 if value2 > value:
                     value = value2
-                    action = action2
-            return value, action
+            return value
 
 
         def min_value(currentGameState, currentDepth):
@@ -196,13 +237,13 @@ class MinimaxAgent(MultiAgentSearchAgent):
             value = float("inf")
             for i in range(1, numOfGhosts + 1):
                 for action in gameState.getLegalActions(i): #only ghost will minimize 
-                    value2, action2 = max_value(gameState.generateSuccessor(i, action), currentDepth)
+                    
+                    value2 = max_value(gameState.generateSuccessor(i, action), currentDepth)
                     if value2 > value:
                         value = value2
-                        action = action2
                 if i == numOfGhosts + 1:
                     currentDepth += 1
-            return value, action
+            return value
         
         def main():
             # need to cut off minimax at a given depth
@@ -224,7 +265,14 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
         Returns the minimax action using self.depth and self.evaluationFunction
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        root = gameState
+        def min_value(state, alpha, beta):
+            return 0
+        
+        def max_value(state, alpha, beta):
+            return 0
+
+        max_value(root, float("-inf"), float("inf"))
 
 class ExpectimaxAgent(MultiAgentSearchAgent):
     """
