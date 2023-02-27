@@ -306,6 +306,7 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
     """
 
     def getAction(self, gameState):
+        
         """
         Returns the minimax action using self.depth and self.evaluationFunction
         """
@@ -377,6 +378,50 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
         legal moves.
         """
         "*** YOUR CODE HERE ***"
+        
+        def minimax(state, index, counter):
+            if (state.isWin() or state.isLose() or (counter // state.getNumAgents()) == self.depth ):
+                #print(" should be at leaf node, My counter is:", counter)
+                #print("I am at a leaf node! My value is:", self.evaluationFunction(state))
+                return self.evaluationFunction(state), ""
+            maxVal = float("-inf")
+            minVal = float("inf")
+            bestAction = ""
+            if index == 0:
+                for action in state.getLegalActions(0):
+                    #print("line 184 My counter is:", counter)
+                    #print("line 184 My index is:", index)
+                    #print("line 185Action:", action)
+                    currentVal = minimax(state.generateSuccessor(0, action), 1, counter + 1)[0]
+                    if currentVal > maxVal:
+                        maxVal = currentVal
+                        #print("line 189 Max Val:", maxVal)
+                        bestAction = action
+                return maxVal, bestAction
+            if index != 0:
+                #print("I'm at a min")
+                minVal = 0
+                for action in state.getLegalActions(index):
+                    #print("line 195 My counter is:", counter)
+                    #print("line 196 My index is:", index)
+                    #print("line 196 Action:", action)
+                    if index <= state.getNumAgents() - 2:
+                        currentVal = minimax(state.generateSuccessor(index, action), index + 1, counter + 1)[0]
+                    else:
+                        currentVal = minimax(state.generateSuccessor(index, action), 0, counter + 1)[0]
+                    minVal += currentVal
+                    #print("line 206 my min val is:", minVal)
+                return minVal, bestAction
+            
+        #get_max(gameState, 0)
+        ans = minimax(gameState, 0, 0)
+        return ans[1]
+        #return retAction[0]
+            
+
+
+
+
         util.raiseNotDefined()
 
 def betterEvaluationFunction(currentGameState):
