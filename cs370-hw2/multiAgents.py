@@ -92,15 +92,15 @@ class ReflexAgent(Agent):
             minDistance = min(foodDistanceDict.values())
             score += 1/minDistance
         #if ghost is on you, avoid at all costs
-        print("Ghost:", newGhostStates[0].configuration.pos)
+        print("Ghost:", newGhostStates[0].getPosition())
         for ghost in newGhostStates:
-            if manhattanDistance(newPos, ghost.configuration.pos) == 0:
+            if manhattanDistance(newPos, ghost.getPosition()) == 0:
                 score -= 100
         # more important to go away from ghosts:
         ghostDistanceList = []
         ghostCount = 0
         for ghost in newGhostStates:
-            ghostDistanceList.append(manhattanDistance(newPos, ghost.configuration.pos))
+            ghostDistanceList.append(manhattanDistance(newPos, ghost.getPosition()))
             ghostCount += 1
         closestGhostDistance = min(ghostDistanceList)
         if closestGhostDistance != 0:
@@ -377,7 +377,43 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
         legal moves.
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        def minimax(state, index, counter):
+            if (state.isWin() or state.isLose() or (counter // state.getNumAgents()) == self.depth ):
+                print(" should be at leaf node, My counter is:", counter)
+                print("I am at a leaf node! My value is:", self.evaluationFunction(state))
+                return self.evaluationFunction(state), ""
+            maxVal = float("-inf")
+            minVal = float("inf")
+            bestAction = ""
+            if index == 0:
+                for action in state.getLegalActions(0):
+                    print("line 184 My counter is:", counter)
+                    print("line 184 My index is:", index)
+                    print("line 185Action:", action)
+                    currentVal = minimax(state.generateSuccessor(0, action), 1, counter + 1)[0]
+                    if currentVal > maxVal:
+                        maxVal = currentVal
+                        print("line 189 Max Val:", maxVal)
+                        bestAction = action
+                return maxVal, bestAction
+            if index != 0:
+                #print("I'm at a min")
+                for action in state.getLegalActions(index):
+                    print("line 195 My counter is:", counter)
+                    print("line 196 My index is:", index)
+                    print("line 196 Action:", action)
+                    if index <= state.getNumAgents() - 2:
+                        currentVal = minimax(state.generateSuccessor(index, action), index + 1, counter + 1)[0]
+                    else:
+                        currentVal = minimax(state.generateSuccessor(index, action), 0, counter + 1)[0]
+                    if currentVal < minVal:
+                        minVal = currentVal
+                        print("linw 203 My index is:", index)
+                        print("line 204 Min Val:", minVal)
+                        bestAction = action
+                    print("line 206 my min val is:", minVal)
+                return minVal, bestAction
+            
 
 def betterEvaluationFunction(currentGameState):
     """
@@ -387,7 +423,64 @@ def betterEvaluationFunction(currentGameState):
     DESCRIPTION: <write something here so we know what you did>
     """
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    '''
+    Here are some method calls that might be useful when implementing minimax.
+
+        gameState.getLegalActions(agentIndex):
+        Returns a list of legal actions for an agent
+        agentIndex=0 means Pacman, ghosts are >= 1
+
+        gameState.generateSuccessor(agentIndex, action):
+        Returns the successor game state after an agent takes an action
+
+        gameState.getNumAgents():
+        Returns the total number of agents in the game
+
+        gameState.isWin():
+        Returns whether or not the game state is a winning state
+
+        gameState.isLose():
+        Returns whether or not the game state is a losing state
+    
+        "*** YOUR CODE HERE ***"
+    '''
+    #successorGameState = currentGameState.generatePacmanSuccessor(action)
+    newPos = currentGameState.getPacmanPosition()
+    newFood = currentGameState.getFood()
+    newGhostStates = currentGameState.getGhostStates()
+    newScaredTimes = [ghostState.scaredTimer for ghostState in newGhostStates]
+
+     
+
+    score = 0
+    newFoodList = newFood.asList()
+    foodDistanceDict = {}
+    # if food is close, reward that
+    for food in newFoodList:
+        if len(newFoodList) == 0:
+            break
+        foodDistanceDict[food] = manhattanDistance(newPos, food)
+    if len(newFoodList) != 0:
+        minDistance = min(foodDistanceDict.values())
+        score += 1/minDistance
+    #if ghost is on you, avoid at all costs
+    print("Ghost:", newGhostStates[0].configuration.pos)
+    for ghost in newGhostStates:
+        if manhattanDistance(newPos, ghost.configuration.pos) == 0:
+            score -= 100
+    # more important to go away from ghosts:
+    ghostDistanceList = []
+    ghostCount = 0
+    for ghost in newGhostStates:
+        ghostDistanceList.append(manhattanDistance(newPos, ghost.configuration.pos))
+        ghostCount += 1
+    closestGhostDistance = min(ghostDistanceList)
+    if closestGhostDistance != 0:
+        score -= 2 * 1/closestGhostDistance
+    #focus on food when power pellet works
+    if sum(newScaredTimes) > 0:
+        score += 4 * 1/closestGhostDistance
+    return score + currentGameState.getScore()
 
 # Abbreviation
 better = betterEvaluationFunction
