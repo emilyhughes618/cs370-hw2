@@ -473,15 +473,15 @@ def betterEvaluationFunction(currentGameState):
         minDistance = min(foodDistanceDict.values())
         score += 1/minDistance
     #if ghost is on you, avoid at all costs
-    print("Ghost:", newGhostStates[0].configuration.pos)
+    print("Ghost:", newGhostStates[0].getPosition())
     for ghost in newGhostStates:
-        if manhattanDistance(newPos, ghost.configuration.pos) == 0:
+        if manhattanDistance(newPos, ghost.getPosition()) == 0:
             score -= 100
     # more important to go away from ghosts:
     ghostDistanceList = []
     ghostCount = 0
     for ghost in newGhostStates:
-        ghostDistanceList.append(manhattanDistance(newPos, ghost.configuration.pos))
+        ghostDistanceList.append(manhattanDistance(newPos, ghost.getPosition()))
         ghostCount += 1
     closestGhostDistance = min(ghostDistanceList)
     if closestGhostDistance != 0:
